@@ -4,16 +4,22 @@ int main(void)
 {
   erl_init(NULL, 0);
   byte buf[BUFSIZ];
-  FILE *f = fopen("/tmp/port", "a");
 
   while(read_cmd(buf) > 0)
   {
-    int index = 0;
-    ETERM* term;
-    int res = ei_decode_term(buf, &index, term);
+    ETERM *arr[2], *tuple;
+    int i;
+    arr[0] = erl_mk_atom("tobbe");
+    arr[1] = erl_mk_int(3928);
+    tuple = erl_mk_tuple(arr, 2);
+    i = erl_encode(tuple, buf);
 
-    fprintf(f, "%i\n", res);
-    fflush(f);
+    write_cmd(buf, i);
+
+    erl_free_compound(tuple);
+    erl_free_term(tuple);
+    erl_free_term(arr[0]);
+    erl_free_term(arr[1]);
   }
   return 1;
 }
